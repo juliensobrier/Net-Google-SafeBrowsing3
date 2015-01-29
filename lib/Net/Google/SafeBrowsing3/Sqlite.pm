@@ -1,4 +1,4 @@
-package Net::Google::SafeBrowsing3::MySQL;
+package Net::Google::SafeBrowsing3::Sqlite;
 
 use strict;
 use warnings;
@@ -13,22 +13,21 @@ use List::Util qw(first);
 our $VERSION = '0.1';
 
 
-
 =head1 NAME
 
-Net::Google::SafeBrowsing3::MySQL - MySQL as back-end storage for the Google Safe Browsing v3 database
+Net::Google::SafeBrowsing3::Sqlite - Sqlite as back-end storage for the Google Safe Browsing v3 database
 
 =head1 SYNOPSIS
 
-  use Net::Google::SafeBrowsing3::MySQL;
+  use Net::Google::SafeBrowsing3::Sqlite;
 
-  my $storage = Net::Google::SafeBrowsing3::MySQL->new(host => '127.0.0.1', database => 'GoogleSafeBrowsingv3');
+  my $storage = Net::Google::SafeBrowsing3::Sqlite->new(file => 'google-v3.db');
   ...
   $storage->close();
 
 =head1 DESCRIPTION
 
-This is an implementation of L<Net::Google::SafeBrowsing3::Storage> using MySQL.
+This is an implementation of L<Net::Google::SafeBrowsing3::Storage> using Sqlite.
 
 =cut
 
@@ -41,42 +40,25 @@ This is an implementation of L<Net::Google::SafeBrowsing3::Storage> using MySQL.
 
 =head2 new()
 
-Create a Net::Google::SafeBrowsing3::MySQL object
+Create a Net::Google::SafeBrowsing3::Sqlite object
 
-  my $storage = Net::Google::SafeBrowsing3::MySQL->new(
-      host     => '127.0.0.1', 
-      database => 'GoogleSafeBrowsingv3', 
-      username => 'foo', 
-      password => 'bar'
-  );
+  my $storage = Net::Google::SafeBrowsing3::Sqlite->new(file => 'google-v3.db');
 
 Arguments
 
 =over 4
 
-=item host
+=item file
 
-Required. MySQL host name
-
-=item database
-
-Required. MySQL database name to connect to.
-
-=item username
-
-Required. MySQL username.
-
-=item password
-
-Required. MySQL password.
-
-=item port
-
-Optional. MySQL port number to connect to.
+Required. File to store the database.
 
 =item keep_all
 
 Optional. Set to 1 to keep old information (such as expiring full hashes) in the database. 0 (delete) by default.
+
+=item cache_size
+
+Sqlite cache size. 20000 by default.
 
 =back
 
@@ -87,10 +69,9 @@ sub new {
 	my ($class, %args) = @_;
 
 	my $self = { # default arguments
-		host			=> '127.0.0.1',
-		database	=> 'GoogleSafeBrowsingv3',
-		port			=> 3306,
 		keep_all	=> 0,
+		file		=> 'gsb3.db',
+		cache_size 	=> 20000,
 
 		%args,
 	};
@@ -100,7 +81,7 @@ sub new {
 
 	$self->init();
 
-  return $self;
+    return $self;
 }
 
 =head1 PUBLIC FUNCTIONS
@@ -117,29 +98,31 @@ Cleanup old full hashes, and close the connection to the database.
 
   $storage->close();
 
-
 =cut
 
 sub init {
 	my ($self, %args) = @_;
 
-	$self->{dbh} = DBI->connect("DBI:mysql:database=" . $self->{database} . ";host=" . $self->{host} . ";port=" . $self->{port}, $self->{username}, $self->{password}, {'RaiseError' => 1});
+	$self->{dbh} = DBI->connect("dbi:SQLite:dbname=" . $self->{file}, "", "");
+	$self->{dbh}->do("PRAGMA journal_mode = OFF");
+	$self->{dbh}->do("PRAGMA synchronous = OFF"); 
+	$self->{dbh}->do("PRAGMA cache_size = " . $self->{cache_size}); 
 
 	my @tables = $self->{dbh}->tables;
 
-	if (! defined first { $_ =~ '`updates`' } @tables) {
+	if (! defined first { $_ eq '"main"."updates"' || $_ eq '"updates"' } @tables) {
 		$self->create_table_updates();
 	}
-	if (! defined first { $_ =~ '`a_chunks`' } @tables) {
+	if (! defined first { $_ eq '"main"."a_chunks"' ||  $_ eq '"a_chunks"' } @tables) {
 		$self->create_table_a_chunks();
 	}
-	if (! defined first { $_ =~ '`s_chunks`' } @tables) { 
+	if (! defined first { $_ eq '"main"."s_chunks"' || $_ eq '"s_chunks"' } @tables) { 
 		$self->create_table_s_chunks();
 	}
-	if (! defined first { $_ =~ '`full_hashes`' } @tables) {
+	if (! defined first { $_ eq '"main"."full_hashes"' || $_ eq '"full_hashes"' } @tables) {
 		$self->create_table_full_hashes();
 	}
-	if (! defined first { $_ =~ '`full_hashes_errors`' } @tables) { 
+	if (! defined first { $_ eq '"main"."full_hashes_errors"' || $_ eq '"full_hashes_errors"' } @tables) { 
 		$self->create_table_full_hashes_errors();
 	}
 }
@@ -150,10 +133,10 @@ sub create_table_updates {
 
 	my $schema = qq{	
 		CREATE TABLE updates (
-			last INT NOT NULL DEFAULT '0',
-			wait INT NOT NULL DEFAULT '0',
-			errors INT NOT NULL DEFAULT '1800',
-			list VARCHAR( 50 ) NOT NULL
+			last INTEGER DEFAULT 0,
+			wait INTEGER DEFAULT 1800,
+			errors INTEGER DEFAULT 0,
+			list TEXT
 		);
 	}; # Need to handle errors
 
@@ -165,9 +148,9 @@ sub create_table_a_chunks {
 
 	my $schema = qq{
 		CREATE TABLE a_chunks (
-			prefix VARBINARY( 32 ),
-			num INT NOT NULL,
-			list VARCHAR( 25 ) NOT NULL
+			prefix TEXT,
+			num INTEGER,
+			list TEXT
 		);
 	};
 
@@ -196,27 +179,18 @@ sub create_table_s_chunks {
 
 	my $schema = qq{
 		CREATE TABLE s_chunks (
-			prefix VARBINARY( 32 ),
-			num INT NOT NULL,
-			add_num INT DEFAULT 0,
-			list VARCHAR( 25 ) NOT NULL
+			prefix TEXT,
+			num INTEGER,
+			add_num INTEGER,
+			list TEXT
 		);
 	};
 
 	$self->{dbh}->do($schema);
 
-
 	my $index = qq{
 		CREATE INDEX s_chunks_num ON s_chunks (
 			num
-		);
-	};
-# 	$self->{dbh}->do($index);
-
-	$index = qq{
-		CREATE INDEX s_chunks_num_list ON s_chunks (
-			num,
-			list
 		);
 	};
 # 	$self->{dbh}->do($index);
@@ -237,11 +211,11 @@ sub create_table_full_hashes {
 
 	my $schema = qq{
 		CREATE TABLE full_hashes (
-			id INT AUTO_INCREMENT PRIMARY KEY,
-			hash VARBINARY( 32 ),
-			list VARCHAR( 25 ),
-			end INT Default '0',
-			type TINYINT Default '0'
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			hash TEXT,
+			list TEXT,
+			end INTEGER,
+			type INTEGER
 		);
 	};
 
@@ -261,10 +235,10 @@ sub create_table_full_hashes_errors {
 
 	my $schema = qq{
 		CREATE TABLE full_hashes_errors (
-			id INT AUTO_INCREMENT PRIMARY KEY,
-			errors INT Default '0',
-			prefix VARBINARY( 32 ),
-			timestamp INT Default '0'
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			errors INTEGER,
+			prefix TEXT,
+			timestamp INTEGER
 		);
 	};
 
@@ -278,19 +252,17 @@ sub add_chunks_s {
 	my $chunks			= $args{chunks}		|| [];
 	my $list			= $args{'list'}		|| '';
 
-	my $add = $self->{dbh}->prepare('INSERT IGNORE INTO s_chunks (prefix, num, add_num, list) VALUES (?, ?, ?, ?)');
-	$self->{dbh}->{AutoCommit} = 0;
+	my $add = $self->{dbh}->prepare('INSERT OR IGNORE INTO s_chunks (prefix, num, add_num, list) VALUES (?, ?, ?, ?)');
 
+	$self->{dbh}->begin_work;
 	foreach my $chunk (@$chunks) {
 		$add->execute( $chunk->{prefix}, $chunknum, $chunk->{add_chunknum}, $list );
 	}
 
 	if (scalar @$chunks == 0) { # keep empty chunks
-		$add->execute( '',  $chunknum, '', $list );
+		$add->execute( '', $chunknum, '', $list );
 	}
-
 	$self->{dbh}->commit;
-	$self->{dbh}->{AutoCommit} = 1;
 }
 
 sub add_chunks_a {
@@ -299,9 +271,9 @@ sub add_chunks_a {
 	my $chunks			= $args{chunks}		|| [];
 	my $list			= $args{'list'}		|| '';
 
-	my $add = $self->{dbh}->prepare('INSERT IGNORE INTO a_chunks (prefix, num, list) VALUES (?, ?, ?)');
-	$self->{dbh}->{AutoCommit} = 0;
+	my $add = $self->{dbh}->prepare('INSERT OR IGNORE INTO a_chunks (prefix, num, list) VALUES (?, ?, ?)');
 
+	$self->{dbh}->begin_work;
 	foreach my $chunk (@$chunks) {
 		$add->execute( $chunk->{prefix}, $chunknum, $list );
 	}
@@ -309,28 +281,28 @@ sub add_chunks_a {
 	if (scalar @$chunks == 0) { # keep empty chunks
 		$add->execute( '', $chunknum, $list );
 	}
-
 	$self->{dbh}->commit;
-	$self->{dbh}->{AutoCommit} = 1;
 }
+
 
 =head1 CHANGELOG
 
 =over 4
 
+
 =item 0.1
 
-Initial release.
+Initial release
 
 =back
 
 =head1 SEE ALSO
 
-See L<Net::Google::SafeBrowsing3> for handling Google Safe Browsing v2.
+See L<Net::Google::SafeBrowsing3> for handling Google Safe Browsing v3.
 
 See L<Net::Google::SafeBrowsing3::Storage> for the list of public functions.
 
-See L<Net::Google::SafeBrowsing3::Sqlite> for a back-end using Sqlite.
+See L<Net::Google::SafeBrowsing3::MySQL> for a back-end using Sqlite.
 
 Google Safe Browsing v3 API: L<https://developers.google.com/safe-browsing/developers_guide_v3>
 

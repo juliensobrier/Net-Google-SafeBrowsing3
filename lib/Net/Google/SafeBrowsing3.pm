@@ -568,12 +568,10 @@ sub lookup_suffix {
 	my @add_chunks = $self->local_lookup_suffix(lists => $lists, url => $url, full_hashes => [@full_hashes], full_hashes_prefix => [@full_hashes_prefix]);
 	if (scalar @add_chunks == 0) {
 		$self->debug("No hit in local lookup\n");
+		return ('', 0) if (wantarray);
 		return '';
 	}
 
-
-	# Check against full hashes
-	my $found = '';
 
 	# get stored full hashes
 	foreach my $hash (@full_hashes) {

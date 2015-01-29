@@ -224,7 +224,8 @@ sub create_table_full_hashes {
 			num INT,
 			hash VARCHAR( 32 ),
 			list VARCHAR( 25 ),
-			timestamp INT Default '0'
+			end INT Default '0',
+			type INT Default '0'
 		);
 	};
 
@@ -465,7 +466,7 @@ sub add_full_hashes {
 
 	foreach my $hash (@$full_hashes) {
 		$self->{dbh}->do("DELETE FROM full_hashes WHERE hash = ? AND list = ?", { }, $hash->{hash}, $hash->{list});
-		$self->{dbh}->do("INSERT INTO full_hashes (hash, list, timestamp, `end`, type) VALUES (?, ?, ?, ?, ?)", { }, $hash->{hash}, $hash->{list}, $timestamp, $timestamp + $hash->{life}, $hash->{type} || 0);
+		$self->{dbh}->do("INSERT INTO full_hashes (hash, list,  `end`, type) VALUES (?, ?, ?, ?)", { }, $hash->{hash}, $hash->{list}, $timestamp + $hash->{life}, $hash->{type} || 0);
 	}
 }
 
