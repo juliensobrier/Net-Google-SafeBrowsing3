@@ -78,9 +78,9 @@ Google::ProtocolBuffers->parse("
 );
 
 # TODO ###################################################
-# Todo: retrun type with list for match
 # Todo: check back-off time
 #Todo: request full hashes: seperate 32bytes for 4bytes
+# Todo: optimize lookup_suffix, 1 search for all lists
 
 =head1 NAME
 
@@ -175,8 +175,6 @@ use constant {
 	SUCCESSFUL							=> 1,	# data sent
 	MALWARE									=> 'goog-malware-shavar',
 	PHISHING								=> 'googpub-phish-shavar',
-	FULL_HASH_TIME					=> 45 * 60,
-	INTERVAL_FULL_HASH_TIME => 'INTERVAL 45 MINUTE',
 	LANDING 								=> 1, # Metadata goog-malware-shavar
 	DISTRIBUTION						=> 2, # Metadata goog-malware-shavar
 };
@@ -578,27 +576,19 @@ sub lookup_suffix {
 	my $found = '';
 
 	# get stored full hashes
-	foreach my $add_chunk (@add_chunks) {
-		my @hashes = $self->{storage}->get_full_hashes( chunknum => $add_chunk->{chunknum}, timestamp => time() - FULL_HASH_TIME, list => $add_chunk->{list});
+	foreach my $hash (@full_hashes) {
+		foreach my $list (@$lists) {
+			my @hashes = $self->{storage}->get_full_hashes(hash => $hash, list => $list);
+			
+			if (scalar @hashes > 0) {
+				$self->debug("Full hashes found: ", scalar(@hashes), "\n");
+				my $result = pop(@hashes);
 
-		$self->debug("Full hashes already stored for chunk " . $add_chunk->{chunknum} . ": " . scalar @hashes . "\n");
-		foreach my $full_hash (@full_hashes) {
-			foreach my $hash (@hashes) {
-				if ($hash eq $full_hash && defined first { $add_chunk->{list} eq $_ } @$lists) {
-					$self->debug("Full hash was found in storage: " . $self->hex_to_ascii($hash) . "\n");
-					$found = $add_chunk->{list};
-					last;
-				}
-# 				elsif ($hash ne $full_hash) {
-# 					$self->debug($self->hex_to_ascii($hash) . " ne " . $self->hex_to_ascii($full_hash) . "\n\n");
-# 				}
+				return ($list, $result->{type} || 0) if (wantarray);
+				return $list;
 			}
-			last if ($found ne '');
 		}
-		last if ($found ne '');
 	}
-
-	return $found if ($found ne '');
 
 
 	# ask for new hashes

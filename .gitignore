@@ -8,3 +8,5 @@ MYMETA.*
 Makefile
 Makefile.old
 *.pl
+*.txt
+*.csv

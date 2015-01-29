@@ -398,20 +398,17 @@ sub delete_sub_ckunks {
 
 Return a list of full hashes
 
-	$storage->get_full_hashes(chunknum => 37444, timestamp => time() - 45 * 60 * 60, list => 'goog-malware-shavar');
+	$storage->get_full_hashes(hash => AAAAAAAA..., list => 'goog-malware-shavar');
 
 
 Arguments
 
 =over 4
 
-=item chunknum
+=item hash
 
-Required. Add chunk number
+Required. 32-bit hash
 
-=item timestamp
-
-Required. Request hashes retrieved after this timestamp value.
 
 =item list
 
@@ -425,7 +422,7 @@ Return value
 
 Array of full hashes:
 
-    (HEX, HEX, HEX)
+    ({ hash => HEX, type => 0 }, { hash => HEX, type => 1 }, { hash => HEX, type => 0 })
 
 =back
 
@@ -434,13 +431,12 @@ Array of full hashes:
 
 sub get_full_hashes {
 	my ($self, %args) = @_;
-	my $chunknum		= $args{chunknum}	|| 0;
-	my $timestamp		= $args{timestamp}	|| 0;
-	my $list			= $args{list}		|| '';
+	my $hash					= $args{hash}	|| '';
+	my $list					= $args{list}		|| '';
 
 	return (
-		$self->ascii_to_hex('eb9744c011d332ad9c92442d18d5a0f913328ad5623983822fc86fad1aab649d'),
-		$self->ascii_to_hex('2ae11a967a5517e24c7be3fa0b8f56e7a13358ce3b07556dc251bc6b650f0f59')
+		{ hash => $self->ascii_to_hex('eb9744c011d332ad9c92442d18d5a0f913328ad5623983822fc86fad1aab649d'), type => 0 },
+		{ hash => $self->ascii_to_hex('2ae11a967a5517e24c7be3fa0b8f56e7a13358ce3b07556dc251bc6b650f0f59'), type => 1 }
 	);
 }
 

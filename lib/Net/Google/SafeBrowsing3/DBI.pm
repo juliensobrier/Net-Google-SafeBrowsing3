@@ -96,7 +96,7 @@ sub close {
 
 
 	if ($self->{keep_all} == 0) {
-		$self->{dbh}->do('DELETE FROM full_hashes WHERE timestamp < ?', { }, time() - Net::Google::SafeBrowsing3::FULL_HASH_TIME);
+		$self->{dbh}->do('DELETE FROM full_hashes WHERE `end` < ?', { }, time());
 	}
 
 	$self->{dbh}->disconnect;
@@ -401,14 +401,13 @@ sub delete_sub_ckunks {
 
 sub get_full_hashes {
 	my ($self, %args) = @_;
-# 	my $chunknum		= $args{chunknum}	|| 0;
-# 	my $timestamp		= $args{timestamp}	|| 0;
+	my $hash					= $args{hash}		|| '';
 	my $list					= $args{list}		|| '';
 	my $timestamp			= time();
 
 	my @hashes = ();
 
-	my $rows = $self->{dbh}->selectall_arrayref("SELECT hash, type FROM full_hashes WHERE `end` <= ? AND list = ?", { Slice => {} }, $timestamp, $list);
+	my $rows = $self->{dbh}->selectall_arrayref("SELECT hash, type FROM full_hashes WHERE `end` <= ? AND list = ? AND hash = ?", { Slice => {} }, $timestamp, $list, $hash);
 	foreach my $row (@$rows) {
 		push(@hashes, $row);
 	}
