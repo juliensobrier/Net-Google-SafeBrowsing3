@@ -17,7 +17,6 @@ WriteMakefile(
 		MIME::Base64::URLSafe		=> 0,
 		MIME::Base64			=> 0,
 		String::HexConvert		=> 0,
-		File::Slurp			=> 0,
 		IO::Socket::SSL			=> 0,
 		Data::Dumper			=> 0,
     }, # e.g., Module::Name => 1.1

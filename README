@@ -25,16 +25,28 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-  blah blah blah
+  LWP::UserAgent
+  URI
+  Digest::SHA
+  List::Util
+  constant
+  Test::More
+  Text::Trim
+  Digest::HMAC_SHA1
+  MIME::Base64::URLSafe
+  MIME::Base64
+  String::HexConvert
+  IO::Socket::SSL
+  Google::ProtocolBuffers	
+
 
 COPYRIGHT AND LICENCE
 
-Put the correct copyright and licence information here.
-
-Copyright (C) 2015 by A. U. Thor
+Copyright (C) 2015 by Julien Sobrier
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.10.1 or,
+it under the same terms as Perl itself, either Perl version 5.8.8 or,
 at your option, any later version of Perl 5 you may have available.
+
 
 

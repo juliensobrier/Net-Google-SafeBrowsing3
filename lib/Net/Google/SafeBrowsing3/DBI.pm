@@ -94,7 +94,6 @@ Cleanup old full hashes, and close the connection to the database.
 sub close {
 	my ($self, %args) = @_;
 
-
 	if ($self->{keep_all} == 0) {
 		$self->{dbh}->do('DELETE FROM full_hashes WHERE `end` < ?', { }, time());
 	}

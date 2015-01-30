@@ -13,7 +13,6 @@ use Text::Trim;
 use MIME::Base64::URLSafe;
 use MIME::Base64;
 use String::HexConvert;
-use File::Slurp;
 use IO::Socket::SSL 'inet4';
 use Google::ProtocolBuffers;
 use Data::Dumper;
@@ -108,13 +107,18 @@ Net::Google::SafeBrowsing3 - Perl extension for the Google Safe Browsing v3 API.
 
 =head1 DESCRIPTION
 
-Net::Google::SafeBrowsing2 implements the Google Safe Browsing v3 API.
+Net::Google::SafeBrowsing3 implements the Google Safe Browsing v3 API.
 
 The library passes most of the unit tests listed in the API documentation. See the documentation (L<https://developers.google.com/safe-browsing/developers_guide_v3>) for more details about the failed tests.
 
 The Google Safe Browsing database must be stored and managed locally. L<Net::Google::SafeBrowsing3::Sqlite> uses Sqlite as the storage back-end, L<Net::Google::SafeBrowsing3::MySQL> uses MySQL. Other storage mechanisms (databases, memory, etc.) can be added and used transparently with this module.
 
 The source code is available on github at L<https://github.com/juliensobrier/Net-Google-SafeBrowsing3>.
+
+If you do not need to inspect more than 10,000 URLs a day, you can use L<Net::Google::SafeBrowsing2::Lookup> with the Google Safe Browsing v2 Lookup API which does not require to store and maintain a local database.
+
+IMPORTANT: If you start with an empty database, you will need to perform several updates to retrieve all the Google Safe Browsing information. This may require up to 24 hours. This is a limitation of the Google API, not of this module.
+
 
 =head1 CONSTANTS
 
