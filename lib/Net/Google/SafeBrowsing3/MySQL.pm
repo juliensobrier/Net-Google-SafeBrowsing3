@@ -278,7 +278,8 @@ sub add_chunks_s {
 	my $chunks			= $args{chunks}		|| [];
 	my $list			= $args{'list'}		|| '';
 
-	my $add = $self->{dbh}->prepare('INSERT IGNORE INTO s_chunks (prefix, num, add_num, list) VALUES (?, ?, ?, ?)');
+	$self->{add_s_chunk} ||= $self->{dbh}->prepare('INSERT IGNORE INTO s_chunks (prefix, num, add_num, list) VALUES (?, ?, ?, ?)');
+	my $add = $self->{add_s_chunk};
 	$self->{dbh}->{AutoCommit} = 0;
 
 	foreach my $chunk (@$chunks) {
@@ -299,7 +300,8 @@ sub add_chunks_a {
 	my $chunks			= $args{chunks}		|| [];
 	my $list			= $args{'list'}		|| '';
 
-	my $add = $self->{dbh}->prepare('INSERT IGNORE INTO a_chunks (prefix, num, list) VALUES (?, ?, ?)');
+	$self->{add_a_chunk} ||=  $self->{dbh}->prepare('INSERT IGNORE INTO a_chunks (prefix, num, list) VALUES (?, ?, ?)');
+	my $add = $self->{add_a_chunk};
 	$self->{dbh}->{AutoCommit} = 0;
 
 	foreach my $chunk (@$chunks) {

@@ -377,7 +377,8 @@ sub delete_add_ckunks {
 	my $chunknums		= $args{chunknums}	|| [];
 	my $list			= $args{'list'}		|| '';
 
-	my $sth = $self->{dbh}->prepare("DELETE FROM a_chunks WHERE num = ? AND list = ?");
+	$self->{delete_a_chunk} ||= $self->{dbh}->prepare("DELETE FROM a_chunks WHERE num = ? AND list = ?");
+	my $sth = $self->{delete_a_chunk};
 
 	foreach my $num (@$chunknums) {
 		$sth->execute($num, $list);
@@ -390,7 +391,8 @@ sub delete_sub_ckunks {
 	my $chunknums		= $args{chunknums}	|| [];
 	my $list			= $args{'list'}		|| '';
 
-	my $sth = $self->{dbh}->prepare("DELETE FROM s_chunks WHERE num = ? AND list = ?");
+	$self->{delete_s_chunk} ||= $self->{dbh}->prepare("DELETE FROM s_chunks WHERE num = ? AND list = ?");
+	my $sth = $self->{delete_s_chunk};
 
 	foreach my $num (@$chunknums) {
 		$sth->execute($num, $list);
@@ -512,6 +514,17 @@ sub get_full_hash_error {
 	}
 }
 
+sub reset_full_hashes {
+	my ($self, %args) 	= @_;
+	my $list					= $args{'list'}		|| '';
+
+	return if ($self->{keep_all} == 1);
+
+	$self->{delete_full_hashes} ||= $self->{dbh}->prepare('DELETE FROM full_hashes WHERE list = ?');
+	my $sth = $self->{delete_full_hashes};
+	$sth->execute( $list );
+}
+
 sub reset {
 	my ($self, %args) 	= @_;
 	my $list			= $args{'list'}		|| '';
@@ -522,7 +535,8 @@ sub reset {
 	$sth = $self->{dbh}->prepare('DELETE FROM a_chunks WHERE list = ?');
 	$sth->execute( $list );
 
-	$sth = $self->{dbh}->prepare('DELETE FROM full_hashes WHERE list = ?');
+	$self->{delete_full_hashes} ||= $self->{dbh}->prepare('DELETE FROM full_hashes WHERE list = ?');
+	$sth = $self->{delete_full_hashes};
 	$sth->execute( $list );
 
 	$sth = $self->{dbh}->prepare('DELETE FROM full_hashes_errors');

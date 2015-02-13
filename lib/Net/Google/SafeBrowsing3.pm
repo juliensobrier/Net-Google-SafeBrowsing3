@@ -77,7 +77,6 @@ Google::ProtocolBuffers->parse("
 );
 
 # TODO ###################################################
-# Todo: check back-off time
 #Todo: request full hashes: seperate 32bytes for 4bytes
 # Todo: optimize lookup_suffix, 1 search for all lists
 
@@ -118,6 +117,8 @@ The source code is available on github at L<https://github.com/juliensobrier/Net
 If you do not need to inspect more than 10,000 URLs a day, you can use L<Net::Google::SafeBrowsing2::Lookup> with the Google Safe Browsing v2 Lookup API which does not require to store and maintain a local database.
 
 IMPORTANT: If you start with an empty database, you will need to perform several updates to retrieve all the Google Safe Browsing information. This may require up to 24 hours. This is a limitation of the Google API, not of this module.
+
+IMPORTANT: Google Safe Browsing v3 requires a different key than v2.
 
 
 =head1 CONSTANTS
@@ -393,6 +394,11 @@ sub update {
 	my $del_add_duration = 0;
 	my $del_sub_duration = 0;
 	my $add_range_info = '';
+
+	# API doc: Clients must clear cached full-length hashes each time they send an update request.
+	foreach my $list (@lists) {
+		$self->{storage}->reset_full_hashes(list => $list);
+	}
 
 	my @lines = split/\s/, $res->decoded_content;
 	$list = '';
