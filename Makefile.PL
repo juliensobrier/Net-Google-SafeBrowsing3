@@ -19,7 +19,17 @@ WriteMakefile(
 		String::HexConvert		=> 0,
 		IO::Socket::SSL			=> 0,
 		Data::Dumper			=> 0,
-    }, # e.g., Module::Name => 1.1
+    },
+    META_MERGE => {
+	'meta-spec' => { version => 2 },
+		resources => {
+			repository => {
+			type => 'git',
+			url => 'https://github.com/juliensobrier/Net-Google-SafeBrowsing3.git',
+			web => 'https://github.com/juliensobrier/Net-Google-SafeBrowsing3',
+		},
+	},
+    },
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Net/Google/SafeBrowsing3.pm', # retrieve abstract from module
        AUTHOR         => 'Julien Sobrier <julien@sobrier.net>') : ()),
