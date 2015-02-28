@@ -750,7 +750,7 @@ sub ua {
 
 =head2 parse_data()
 
-Parse data from a rediration (add and sub chunk information).
+Parse data from a redirection (add and sub chunk information).
 
 =cut
 
