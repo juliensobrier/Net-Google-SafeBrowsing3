@@ -169,7 +169,7 @@ sub lookup {
 		}
 		$self->debug("BODY:\n$body\n\n");
 	
-		my $url = "https://sb-ssl.google.com/safebrowsing/api/lookup?client=perl&apikey=" . $self->{key} . "&appver=$VERSION&pver=" . $self->{version};
+		my $url = "https://sb-ssl.google.com/safebrowsing/api/lookup?client=perl&key=" . $self->{key} . "&appver=$VERSION&pver=" . $self->{version};
 		sleep $delay if ($delay > 0 && $count > 0);
 		my $res = $self->ua->post($url, Content =>  $body);
 	

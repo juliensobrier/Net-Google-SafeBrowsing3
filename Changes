@@ -1,6 +1,8 @@
 Revision history for Perl extension Net::Google::SafeBrowsing3.
 
 0.01  Sun Jan 25 19:30:37 2015
-	- original version; created by h2xs 1.23 with options
-		-AX -n Net::Google::SafeBrowsing3
+	- original version
 
+0.02  Sat Feb 28 11:17:00 2015
+	- add Lookup.pm
+	- add link to Github
