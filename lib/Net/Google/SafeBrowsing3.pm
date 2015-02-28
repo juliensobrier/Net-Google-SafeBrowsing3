@@ -91,15 +91,15 @@ Net::Google::SafeBrowsing3 - Perl extension for the Google Safe Browsing v3 API.
   
   my $storage = Net::Google::SafeBrowsing3::Sqlite->new(file => 'google-v3.db');
   my $gsb = Net::Google::SafeBrowsing3->new(
-		key 	=> "my key", 
-		storage	=> $storage,
+	  key 	=> "my key", 
+	  storage	=> $storage,
   );
   
   $gsb->update();
   my $match = $gsb->lookup(url => 'http://www.gumblar.cn/');
   
   if ($match eq MALWARE) {
-		print "http://www.gumblar.cn/ is flagged as a dangerous site\n";
+	  print "http://www.gumblar.cn/ is flagged as a dangerous site\n";
   }
 
   $storage->close();
@@ -221,7 +221,6 @@ Required. Object which handle the storage for the Google Safe Browsing database.
 =item list
 
 Optional. The Google Safe Browsing list to handle. By default, handles both MALWARE and PHISHING.
-
 
 =item debug
 
@@ -917,7 +916,7 @@ sub error {
 }
 
 
-=head2 error()
+=head2 perf()
 
 Print performance message.
 
