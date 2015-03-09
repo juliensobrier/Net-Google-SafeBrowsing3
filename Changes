@@ -6,3 +6,6 @@ Revision history for Perl extension Net::Google::SafeBrowsing3.
 0.02  Sat Feb 28 11:17:00 2015
 	- add Lookup.pm
 	- add link to Github
+
+0.3  Sun March 8 17:50:00 2015
+	- Fix unitilialized variable in Lookup.pm

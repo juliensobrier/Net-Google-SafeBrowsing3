@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use URI;
 use Text::Trim;
 
-our $VERSION = '0.1';
+our $VERSION = '0.3';
 
 =head1 NAME
 
@@ -35,11 +35,13 @@ Net::Google::SafeBrowsing3::Lookup - Perl extension for the Google Safe Browsing
 
 =head1 DESCRIPTION
 
-Net::Google::SafeBrowsing3::Lookup implements the Google Safe Browsing v3 Lookup API. See the API documentation at L<https://developers.google.com/safe-browsing/lookup_guide>.
+Net::Google::SafeBrowsing3::Lookup implements the Google Safe Browsing v3.1 Lookup API. See the API documentation at L<https://developers.google.com/safe-browsing/lookup_guide>.
 
 If you need to check more than 10,000 URLs a day, you need to use L<Net::Google::SafeBrowsing3>.
 
 The source code is available on github at L<https://github.com/juliensobrier/Net-Google-SafeBrowsing3>.
+
+IMPORTANT: Google Safe Browsing v3.1 requires a different key than v3.0.
 
 =head1 CONSTRUCTOR
 
@@ -90,12 +92,12 @@ sub new {
 	my ($class, %args) = @_;
 
 	my $self = { # default arguments
-		key			=> '',
+		key				=> '',
 		version		=> '3.1',
-		debug		=> 0,
-		delay		=> 0,
-# 		errors		=> 0,
-# 		last_error	=> '',
+		debug			=> 0,
+		delay			=> 0,
+		errors		=> 1,
+		last_error	=> '',
 
 		%args,
 	};

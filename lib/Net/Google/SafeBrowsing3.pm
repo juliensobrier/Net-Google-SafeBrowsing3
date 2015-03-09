@@ -28,7 +28,7 @@ BEGIN {
     );
 }
 
-our $VERSION = '0.02';
+our $VERSION = '0.3';
 
 Google::ProtocolBuffers->parse("
 	message ChunkData {
