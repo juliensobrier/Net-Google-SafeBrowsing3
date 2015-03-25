@@ -18,7 +18,7 @@ use Google::ProtocolBuffers;
 use Data::Dumper;
 
 use Exporter 'import';
-our @EXPORT = qw(DATABASE_RESET INTERNAL_ERROR SERVER_ERROR NO_UPDATE NO_DATA SUCCESSFUL MALWARE PHISHING LANDING DISTRIBUTION);
+our @EXPORT = qw(DATABASE_RESET INTERNAL_ERROR SERVER_ERROR NO_UPDATE NO_DATA SUCCESSFUL MALWARE PHISHING UNWANTED LANDING DISTRIBUTION);
 
 
 BEGIN {
@@ -28,7 +28,7 @@ BEGIN {
     );
 }
 
-our $VERSION = '0.3';
+our $VERSION = '0.4';
 
 Google::ProtocolBuffers->parse("
 	message ChunkData {
@@ -180,6 +180,7 @@ use constant {
 	SUCCESSFUL							=> 1,	# data sent
 	MALWARE									=> 'goog-malware-shavar',
 	PHISHING								=> 'googpub-phish-shavar',
+	UNWANTED								=> 'goog-unwanted-shavar',
 	LANDING 								=> 1, # Metadata goog-malware-shavar
 	DISTRIBUTION						=> 2, # Metadata goog-malware-shavar
 };
@@ -249,7 +250,7 @@ sub new {
 
 	my $self = { # default arguments
 		server		=> 'https://safebrowsing.google.com/safebrowsing/',
-		list			=> [PHISHING, MALWARE],
+		list			=> [PHISHING, MALWARE, UNWANTED],
 		key				=> '',
 		version		=> '3.0',
 		debug			=> 0,
