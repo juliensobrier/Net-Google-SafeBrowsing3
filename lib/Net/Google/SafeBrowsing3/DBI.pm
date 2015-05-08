@@ -118,11 +118,16 @@ sub create_table_updates {
 			last INT NOT NULL DEFAULT '0',
 			wait INT NOT NULL DEFAULT '0',
 			errors INT NOT NULL DEFAULT '1800',
-			list VARCHAR( 25 ) NOT NULL
+			list VARCHAR( 50 ) NOT NULL
 		);
 	}; # Need to handle errors
 
 	$self->{dbh}->do($schema);
+
+	my $index = qq{
+		CREATE UNIQUE INDEX list_unique ON updates (list);
+	};
+	$self->{dbh}->do($index);
 }
 
 sub create_table_a_chunks {

@@ -10,7 +10,7 @@ use DBI;
 use List::Util qw(first);
 
 
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 
 
 
@@ -158,6 +158,11 @@ sub create_table_updates {
 	}; # Need to handle errors
 
 	$self->{dbh}->do($schema);
+
+	my $index = qq{
+		CREATE UNIQUE INDEX list_unique ON updates (list);
+	};
+	$self->{dbh}->do($index);
 }
 
 sub create_table_a_chunks {

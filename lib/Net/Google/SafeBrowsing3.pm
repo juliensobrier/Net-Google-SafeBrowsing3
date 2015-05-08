@@ -1,6 +1,6 @@
 package Net::Google::SafeBrowsing3;
 
-use 5.010001;
+#use 5.010001;
 use strict;
 use warnings;
 
