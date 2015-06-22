@@ -1,6 +1,5 @@
 package Net::Google::SafeBrowsing3;
 
-#use 5.010001;
 use strict;
 use warnings;
 
@@ -28,7 +27,7 @@ BEGIN {
     );
 }
 
-our $VERSION = '0.4';
+our $VERSION = '0.5';
 
 Google::ProtocolBuffers->parse("
 	message ChunkData {
