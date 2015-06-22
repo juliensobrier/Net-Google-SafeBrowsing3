@@ -448,7 +448,7 @@ sub update_error {
 		$self->{dbh}->do("INSERT INTO updates (last, wait, errors, list) VALUES (?, ?, ?, ?)", undef, $time, $wait, $errors, $list);
 	}
 	else {
-		$self->{dbh}->do("UPDATE updates SET last = ?, wait = ?, errors = ?, list = ? WHERE 1", undef, $time, $wait, $errors, $list);
+		$self->{dbh}->do("UPDATE updates SET last = ?, wait = ?, errors = ? WHERE list = ?", undef, $time, $wait, $errors, $list);
 	}
 }
 
