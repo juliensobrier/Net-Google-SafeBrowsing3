@@ -165,9 +165,9 @@ sub create_table_full_hashes {
     CREATE TABLE full_hashes (
       id SERIAL PRIMARY KEY,
       hash VARCHAR( 32 ),
-      list VARCHAR( 25 ),
+      list VARCHAR( 50 ),
       end INT Default '0',
-			type INT Default '0'
+	  type INT Default '0'
     );
   };
 
