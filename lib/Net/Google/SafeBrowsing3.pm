@@ -1293,7 +1293,7 @@ sub parse_full_hashes {
 		$self->debug("Number of full hashes returned: ", $num, "\n");
 
 		my $metadata = 0;
-		if ($data =~ s/:m\n//) {
+		if ($data =~ s/:m$//) {
 			$metadata = 1;
 		}
 
