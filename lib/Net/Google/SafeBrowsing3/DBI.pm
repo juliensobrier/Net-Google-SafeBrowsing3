@@ -382,12 +382,11 @@ sub delete_add_ckunks {
 	my $chunknums		= $args{chunknums}	|| [];
 	my $list			= $args{'list'}		|| '';
 
-	$self->{delete_a_chunk} ||= $self->{dbh}->prepare("DELETE FROM a_chunks WHERE num = ? AND list = ?");
+
+	$self->{delete_a_chunk} ||= $self->{dbh}->prepare("DELETE FROM a_chunks WHERE num IN (?) AND list = ?");
 	my $sth = $self->{delete_a_chunk};
 
-	foreach my $num (@$chunknums) {
-		$sth->execute($num, $list);
-	}
+	$sth->execute( join(',', @{ $args{chunknums} }), $list);
 }
 
 
@@ -396,14 +395,9 @@ sub delete_sub_ckunks {
 	my $chunknums		= $args{chunknums}	|| [];
 	my $list			= $args{'list'}		|| '';
 
-	$self->{delete_s_chunk} ||= $self->{dbh}->prepare("DELETE FROM s_chunks WHERE num = ? AND list = ?");
+	$self->{delete_s_chunk} ||= $self->{dbh}->prepare("DELETE FROM s_chunks WHERE num IN (?) AND list = ?");
 	my $sth = $self->{delete_s_chunk};
-
-	foreach my $num (@$chunknums) {
-		$sth->execute($num, $list);
-	}
-
-
+	$sth->execute( join(',', @{ $args{chunknums} }), $list);
 }
 
 sub get_full_hashes {
