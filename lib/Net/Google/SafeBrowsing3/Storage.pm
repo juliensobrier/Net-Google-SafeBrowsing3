@@ -809,6 +809,33 @@ sub ascii_to_hex {
 	return $hex;
 }
 
+
+=head2 debug()
+
+Print debug output.
+
+=cut
+
+sub debug {
+	my ($self, @messages) = @_;
+
+	print join('', @messages) if ($self->{debug} > 0);
+}
+
+
+=head2 error()
+
+Print error message.
+
+=cut
+
+sub error {
+	my ($self, $message) = @_;
+
+	print "ERROR - ", $message if ($self->{debug} > 0 || $self->{errors} > 0);
+	$self->{last_error} = $message;
+}
+
 =head1 CHANGELOG
 
 =over 4
