@@ -1,16 +1,17 @@
 Net-Google-SafeBrowsing3
 ========================
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+Net::Google::SafeBrowsing2::Lookup implements the Google Safe Browsing v2 Lookup API (up to 10,000 URL checks a day).
 
-A README file is required for CPAN modules since CPAN extracts the
-README file from a module distribution so that people browsing the
-archive can use it get an idea of the modules uses. It is usually a
-good idea to provide version information here so that people can
-decide whether fixes for the module are worth downloading.
+The library passes most of the unit tests listed in the API documentation. 
+
+The Google Safe Browsing database must be stored and managed locally.
+Net::Google::SafeBrowsing3::Sqlite uses Sqlite as the storage back-end, Net::Google::SafeBrowsing3::MySQL uses MySQL.
+Other storage mechanisms (databases, memory, etc.) can be added and used transparently with this module.
+
+
+The source code is available on github at https://github.com/juliensobrier/Net-Google-SafeBrowsing3.
+
 
 INSTALLATION
 
