@@ -10,7 +10,7 @@ use DBI;
 use List::Util qw(first);
 
 
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 
 
 =head1 NAME
@@ -575,6 +575,11 @@ sub create_range {
 =head1 CHANGELOG
 
 =over 4
+
+=item 0.2
+
+Fix duplicate update records. Speed up deletion of chunks.
+
 
 =item 0.1
 

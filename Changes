@@ -1,14 +1,18 @@
 Revision history for Perl extension Net::Google::SafeBrowsing3.
 
-0.01  Sun Jan 25 19:30:37 2015
+0.01  Sun January 25 19:30:37 2015
 	- original version
 
-0.02  Sat Feb 28 11:17:00 2015
+0.02  Sat February 28 11:17:00 2015
 	- add Lookup.pm
 	- add link to Github
 
 0.3  Sun March 8 17:50:00 2015
 	- Fix unitilialized variable in Lookup.pm
 
-0.4  Tue Mar 24 19:48:00 2015
+0.4  Tue March 24 19:48:00 2015
 	- Handle list goog-unwanted-shavar by default
+
+0.5  Mon June 22 21:42:00 2015
+	- Fix duplicate update records
+	- Speed up deleteion of chunks
