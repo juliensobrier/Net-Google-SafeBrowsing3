@@ -27,7 +27,7 @@ BEGIN {
     );
 }
 
-our $VERSION = '0.5';
+our $VERSION = '0.6';
 
 Google::ProtocolBuffers->parse("
 	message ChunkData {
@@ -157,6 +157,10 @@ Name of the Malware list in Google Safe Browsing (shortcut to 'goog-malware-shav
 =item PHISHING
 
 Name of the Phishing list in Google Safe Browsing (shortcut to 'googpub-phish-shavar')
+
+=item UNWANTED
+
+Name of the Unwamted Application list in Google Safe Browsing (shortcut to 'goog-unwanted-shavar')
 
 =item LANDING
 
@@ -424,6 +428,7 @@ sub update {
 			$add_range_info = $1 . " $list";
 			my @nums = $self->expand_range(range => $1);
 			$self->{storage}->delete_add_ckunks(chunknums => [@nums], list => $list);
+			$del_add_duration = time() - $del_add_start;
 
 			$result = 1;
 		}
@@ -433,7 +438,7 @@ sub update {
 			my $del_sub_start = time();
 			my @nums = $self->expand_range(range => $1);
 			$self->{storage}->delete_sub_ckunks(chunknums => [@nums], list => $list);
-			$del_add_duration = time() - $del_sub_start;
+			$del_sub_duration = time() - $del_sub_start;
 
 			$result = 1;
 		}
@@ -921,9 +926,9 @@ Print performance message.
 =cut
 
 sub perf {
-	my ($self, $message) = @_;
+	my ($self, @messages) = @_;
 
-	print $message if ($self->{perf} > 0);
+	print join('', @messages)if ($self->{perf} > 0);
 }
 
 
@@ -1393,6 +1398,44 @@ sub expand_range {
 
 	return @list;
 }
+
+=back
+
+=head1 CHANGELOG
+
+=over 4
+
+=item 0.6
+
+Fix local database update.
+
+=back
+
+=head1 SEE ALSO
+
+See L<Net::Google::SafeBrowsing3> for handling Google Safe Browsing v3.
+
+See L<Net::Google::SafeBrowsing3::Storage> for the list of public functions.
+
+See L<Net::Google::SafeBrowsing3::Sqlite> for a back-end using Sqlite.
+
+Google Safe Browsing v3 API: L<https://developers.google.com/safe-browsing/developers_guide_v3>
+
+
+=head1 AUTHOR
+
+Julien Sobrier, E<lt>julien@sobrier.netE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2015 by Julien Sobrier
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.8 or,
+at your option, any later version of Perl 5 you may have available.
+
+
+=cut
 
 1;
 __END__
