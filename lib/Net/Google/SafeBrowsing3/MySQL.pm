@@ -91,6 +91,7 @@ sub new {
 		database	=> 'GoogleSafeBrowsingv3',
 		port			=> 3306,
 		keep_all	=> 0,
+		debug		=> 0,
 
 		%args,
 	};
@@ -124,6 +125,7 @@ sub init {
 	my ($self, %args) = @_;
 
 	$self->{dbh} = DBI->connect("DBI:mysql:database=" . $self->{database} . ";host=" . $self->{host} . ";port=" . $self->{port}, $self->{username}, $self->{password}, {'RaiseError' => 1});
+# 	$self->{dbh}->trace($self->{dbh}->parse_trace_flags('SQL|1|test')) if ($self->{debug});
 
 	my @tables = $self->{dbh}->tables;
 

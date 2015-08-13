@@ -89,6 +89,7 @@ sub new {
     host     => '127.0.0.1',
     database => 'google_safe_browsing3',
     keep_all => 0,
+		debug		=> 0,
 
     %args,
   };

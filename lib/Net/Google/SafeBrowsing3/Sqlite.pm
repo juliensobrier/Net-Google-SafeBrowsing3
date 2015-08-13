@@ -72,6 +72,7 @@ sub new {
 		keep_all	=> 0,
 		file		=> 'gsb3.db',
 		cache_size 	=> 20000,
+		debug		=> 0,
 
 		%args,
 	};
