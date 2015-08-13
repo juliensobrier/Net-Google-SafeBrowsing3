@@ -584,6 +584,10 @@ sub lookup_suffix {
 		return '';
 	}
 
+	$self->debug("Found ", scalar(@add_chunks), " add chunk(s) in local database\n");
+	foreach my $add (@add_chunks) {
+		$self->debug("Chunk: ", $self->hex_to_ascii($add->{prefix}), " - ", $add->{list}, "\n");
+	}
 
 	# get stored full hashes
 	foreach my $hash (@full_hashes) {
@@ -1279,7 +1283,7 @@ sub parse_full_hashes {
 	}
 
 	while (length $data > 0) {
-		if ($data !~ /^[a-z-]+:\d+:\d+(:m)?\n/) {
+		if ($data !~ /^[a-z-]+:\d+:\d+(:m)?\n/gi) { # goog-malware-shavar:32:1:m
 			$self->error("list not found\n");
 			return ();
 		}
@@ -1296,7 +1300,7 @@ sub parse_full_hashes {
 		$self->debug("Number of full hashes returned: ", $num, "\n");
 
 		my $metadata = 0;
-		if ($data =~ s/:m$//) {
+		if ($data =~ s/:m\n//) {
 			$metadata = 1;
 		}
 
@@ -1315,7 +1319,7 @@ sub parse_full_hashes {
 				my $meta_length = $1;
 
 				my $info = substr($data, 0, $meta_length, '');
-				$self->debug("Metadata: $info");
+				$self->debug("Metadata: $info\n");
 				my $extra = MalwarePatternType->decode($info);
 
 				# update the type
