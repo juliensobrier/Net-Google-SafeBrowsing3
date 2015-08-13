@@ -10,7 +10,7 @@ use DBI;
 use List::Util qw(first);
 
 
-our $VERSION = '0.2';
+our $VERSION = '0.3';
 
 
 =head1 NAME
@@ -62,6 +62,7 @@ sub new {
 	my ($class, %args) = @_;
 
 	my $self = { # default arguments
+		debug			=> 0,
 		keep_all	=> 0,
 		%args,
 	};
@@ -382,7 +383,7 @@ sub delete_add_ckunks {
 	my $chunknums			= $args{chunknums}	|| [];
 	my $list					= $args{'list'}		|| '';
 
-	my $num = $self->{dbh}->do("DELETE FROM a_chunks WHERE num IN (" . join(',', @{ $args{chunknums} }) .  ") AND list = ?", $list);
+	my $num = $self->{dbh}->do("DELETE FROM a_chunks WHERE num IN (" . join(',', @{ $args{chunknums} }) .  ") AND list = ?", { }, $list);
 	$self->debug("Rows deleted: $num\n"); 
 }
 
@@ -392,7 +393,7 @@ sub delete_sub_ckunks {
 	my $chunknums		= $args{chunknums}	|| [];
 	my $list			= $args{'list'}		|| '';
 
-	my $num = $self->{dbh}->do("DELETE FROM s_chunks WHERE num IN (" . join(',', @{ $args{chunknums} }) . ") AND list = ?" , $list);
+	my $num = $self->{dbh}->do("DELETE FROM s_chunks WHERE num IN (" . join(',', @{ $args{chunknums} }) . ") AND list = ?" , { }, $list);
 	$self->debug("Rows deleted: $num\n"); 
 }
 
@@ -403,8 +404,8 @@ sub get_full_hashes {
 	my $timestamp			= time();
 
 	my @hashes = ();
+	my $rows = $self->{dbh}->selectall_arrayref("SELECT hash, type FROM full_hashes WHERE `end` >= ? AND list = ? AND hash = ?", { Slice => {} }, $timestamp, $list, $hash);
 
-	my $rows = $self->{dbh}->selectall_arrayref("SELECT hash, type FROM full_hashes WHERE `end` <= ? AND list = ? AND hash = ?", { Slice => {} }, $timestamp, $list, $hash);
 	foreach my $row (@$rows) {
 		push(@hashes, $row);
 	}
@@ -462,7 +463,7 @@ sub add_full_hashes {
 
 	foreach my $hash (@$full_hashes) {
 		$self->{dbh}->do("DELETE FROM full_hashes WHERE hash = ? AND list = ?", { }, $hash->{hash}, $hash->{list});
-		$self->{dbh}->do("INSERT INTO full_hashes (hash, list,  `end`, type) VALUES (?, ?, ?, ?)", { }, $hash->{hash}, $hash->{list}, $timestamp + $hash->{life}, $hash->{type} || 0);
+		$self->{dbh}->do("INSERT INTO full_hashes (hash, list, `end`, type) VALUES (?, ?, ?, ?)", { }, $hash->{hash}, $hash->{list}, $timestamp + $hash->{life}, $hash->{type} || 0);
 	}
 }
 
@@ -578,6 +579,10 @@ sub debug {
 =head1 CHANGELOG
 
 =over 4
+
+=item 0.3
+
+Fix deletion of add and sub chunks
 
 =item 0.2
 
