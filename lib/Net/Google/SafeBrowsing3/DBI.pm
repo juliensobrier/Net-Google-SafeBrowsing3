@@ -379,14 +379,11 @@ sub get_sub_chunks_nums {
 
 sub delete_add_ckunks {
 	my ($self, %args) 	= @_;
-	my $chunknums		= $args{chunknums}	|| [];
-	my $list			= $args{'list'}		|| '';
+	my $chunknums			= $args{chunknums}	|| [];
+	my $list					= $args{'list'}		|| '';
 
-
-	$self->{delete_a_chunk} ||= $self->{dbh}->prepare("DELETE FROM a_chunks WHERE num IN (?) AND list = ?");
-	my $sth = $self->{delete_a_chunk};
-
-	$sth->execute( join(',', @{ $args{chunknums} }), $list);
+	my $num = $self->{dbh}->do("DELETE FROM a_chunks WHERE num IN (" . join(',', @{ $args{chunknums} }) .  ") AND list = ?", $list);
+	$self->debug("Rows deleted: $num\n"); 
 }
 
 
@@ -395,9 +392,8 @@ sub delete_sub_ckunks {
 	my $chunknums		= $args{chunknums}	|| [];
 	my $list			= $args{'list'}		|| '';
 
-	$self->{delete_s_chunk} ||= $self->{dbh}->prepare("DELETE FROM s_chunks WHERE num IN (?) AND list = ?");
-	my $sth = $self->{delete_s_chunk};
-	$sth->execute( join(',', @{ $args{chunknums} }), $list);
+	my $num = $self->{dbh}->do("DELETE FROM s_chunks WHERE num IN (" . join(',', @{ $args{chunknums} }) . ") AND list = ?" , $list);
+	$self->debug("Rows deleted: $num\n"); 
 }
 
 sub get_full_hashes {
@@ -571,6 +567,13 @@ sub create_range {
 
 	return $range;
 }
+
+sub debug {
+	my ($self, @messages) = @_;
+
+	print join('', @messages) if ($self->{debug} > 0);
+}
+
 
 =head1 CHANGELOG
 
