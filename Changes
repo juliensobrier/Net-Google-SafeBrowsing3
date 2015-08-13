@@ -16,3 +16,8 @@ Revision history for Perl extension Net::Google::SafeBrowsing3.
 0.5  Mon June 22 21:42:00 2015
 	- Fix duplicate update records
 	- Speed up deleteion of chunks
+
+0.6  Wed August 12 21:11:00 2015
+	- Fix local full ahsh lookup
+	- Fix local database update
+	- Fix parsing of full hash response

@@ -1411,7 +1411,7 @@ sub expand_range {
 
 =item 0.6
 
-Fix local database update.
+Many fixes: local database update, lcoal database lookup, full hash response parsing, etc.
 
 =back
 
