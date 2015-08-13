@@ -371,9 +371,7 @@ sub update {
 	my $res = $ua->post($url, Content =>  $body);
 	$self->perf("$body\n");
 
-	$self->debug($res->request->as_string . "\n" . $res->as_string . "\n");
-	$self->debug($res->request->as_string . "\n") if ($self->{debug});
-	$self->debug($res->as_string . "\n") if ($self->{debug});
+	$self->debug($res->request->as_string, "\n", $res->as_string . "\n");
 	my $duration_req = time() - $start_req;
 
 	if (! $res->is_success) {
