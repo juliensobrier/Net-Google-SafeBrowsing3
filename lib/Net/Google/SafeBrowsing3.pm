@@ -1403,8 +1403,6 @@ sub expand_range {
 	return @list;
 }
 
-=back
-
 =head1 CHANGELOG
 
 =over 4
