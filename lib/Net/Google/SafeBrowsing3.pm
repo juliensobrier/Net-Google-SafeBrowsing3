@@ -27,7 +27,7 @@ BEGIN {
     );
 }
 
-our $VERSION = '0.6';
+our $VERSION = '0.7';
 
 Google::ProtocolBuffers->parse("
 	message ChunkData {
@@ -1300,7 +1300,7 @@ sub parse_full_hashes {
 		$self->debug("Number of full hashes returned: ", $num, "\n");
 
 		my $metadata = 0;
-		if ($data =~ s/:m\n//) {
+		if ($data =~ s/:m[\r\n]//) {
 			$metadata = 1;
 		}
 
@@ -1315,7 +1315,7 @@ sub parse_full_hashes {
 
 		if ($metadata) {
 			my $count = 0;
-			while ($data =~ s/(\d+)\n//) {
+			while ($data =~ s/(\d+)[\r\n]//) {
 				my $meta_length = $1;
 
 				my $info = substr($data, 0, $meta_length, '');
@@ -1408,6 +1408,10 @@ sub expand_range {
 =head1 CHANGELOG
 
 =over 4
+
+=item 0.7
+
+Remove \r from metata data
 
 =item 0.6
 
